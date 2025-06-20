@@ -43,7 +43,7 @@
             <!-- Card Container -->
             <div id="card-container" class="relative w-full h-full">
                 <!-- Card 1: Cover -->
-                <div id="card-1" class="card absolute inset-0 opacity-100" style="background-image: url('https://images.unsplash.com/photo-1621417403604-c5b133d1c44b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+                <div id="card-1" class="card absolute inset-0 opacity-100 z-10" style="background-image: url('https://images.unsplash.com/photo-1621417403604-c5b133d1c44b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
                     <div class="card-content w-full h-full flex flex-col justify-between p-6 bg-black bg-opacity-40 text-white text-center">
                         <div></div>
                         <div class="flex-grow flex flex-col justify-center">
@@ -167,19 +167,19 @@
             </div>
 
             <!-- Navigation Buttons -->
-            <button id="prevBtn" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 text-gray-800 rounded-full p-2 hover:bg-opacity-75 transition disabled:opacity-0">
+            <button id="prevBtn" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 text-gray-800 rounded-full p-2 hover:bg-opacity-75 transition disabled:opacity-0 z-20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
-            <button id="nextBtn" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 text-gray-800 rounded-full p-2 hover:bg-opacity-75 transition">
+            <button id="nextBtn" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 text-gray-800 rounded-full p-2 hover:bg-opacity-75 transition z-20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
             </button>
             
             <!-- Pagination Dots -->
-            <div id="pagination" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2"></div>
+            <div id="pagination" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20"></div>
         </div>
     </div>
 
@@ -191,18 +191,16 @@
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             const paginationContainer = document.getElementById('pagination');
+            const cardContainer = document.getElementById('card-container');
 
             // Create pagination dots
             for (let i = 1; i <= totalCards; i++) {
                 const dot = document.createElement('button');
-                dot.classList.add('w-2', 'h-2', 'rounded-full', 'transition');
+                dot.classList.add('w-2', 'h-2', 'rounded-full', 'transition', 'bg-gray-400');
                 dot.dataset.card = i;
                 if (i === 1) {
                     dot.classList.add('bg-white');
                     dot.classList.remove('bg-gray-400');
-                } else {
-                    dot.classList.add('bg-gray-400');
-                    dot.classList.remove('bg-white');
                 }
                 dot.addEventListener('click', () => showCard(i));
                 paginationContainer.appendChild(dot);
@@ -210,12 +208,20 @@
             const dots = paginationContainer.querySelectorAll('button');
 
             function showCard(cardNumber) {
-                // Hide current card
-                document.getElementById(`card-${currentCard}`).classList.add('opacity-0');
+                // Hide the previously active card by finding the one with z-10
+                const oldCardEl = cardContainer.querySelector('.z-10');
+                if (oldCardEl) {
+                    oldCardEl.classList.add('opacity-0');
+                    oldCardEl.classList.remove('z-10'); // remove from top layer
+                }
                 
-                // Show new card
+                // Show the new card
                 currentCard = cardNumber;
-                document.getElementById(`card-${currentCard}`).classList.remove('opacity-0');
+                const newCardEl = document.getElementById(`card-${currentCard}`);
+                if (newCardEl) {
+                    newCardEl.classList.remove('opacity-0');
+                    newCardEl.classList.add('z-10'); // bring to top layer
+                }
 
                 updateUI();
             }
